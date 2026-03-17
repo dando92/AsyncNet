@@ -10,7 +10,6 @@ namespace AsyncNet.Scheduler
         public ControlledContextAsyncScheduler()
         {
             _context = new SingleThreadContext();
-            AsyncScheduler.SetScheduler(this);
         }
 
         public void Dispose()

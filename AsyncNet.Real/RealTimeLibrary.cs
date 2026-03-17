@@ -4,19 +4,18 @@ namespace AsyncNet.Real
 {
     public class RealTimeLibrary : ITimeLibrary
     {
-        public RealTimeLibrary()
-        {
-            Time.SetTimeLibrary(this);
-        }
-
         public Task Delay(int ms)
         {
             return Task.Delay(ms);
         }
 
-        public Task Delay(int ms, ICancellationToken token)
+        public async Task Delay(int ms, ICancellationToken token)
         {
-            return Task.Delay(ms, (token as RealCancellationToken).Token);
+            var delayTask = Task.Delay(ms);
+            var winner = await Task.WhenAny(delayTask, token.Task);
+
+            if (winner != delayTask)
+                await token.Task;
         }
 
         public ICancellationToken GetCancellationToken(int expireTime)

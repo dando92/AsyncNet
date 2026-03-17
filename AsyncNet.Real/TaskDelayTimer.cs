@@ -12,7 +12,8 @@ namespace AsyncNet.Real
 
         public void Start(Action callback, int dueTime)
         {
-            if (_isRunning) Stop();
+            if (_isRunning)
+                Stop();
 
             _isRunning = true;
             _currentCallback = callback;
@@ -33,7 +34,8 @@ namespace AsyncNet.Real
 
         public void ChangeDueTime(int dueTime)
         {
-            if (!_isRunning) return;
+            if (!_isRunning)
+                return;
 
             // Update the time and restart the loop by canceling the current delay
             _currentDueTime = dueTime;

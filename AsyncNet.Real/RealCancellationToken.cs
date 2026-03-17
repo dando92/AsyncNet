@@ -6,7 +6,6 @@ namespace AsyncNet.Real
     public class RealCancellationToken : ICancellationToken
     {
         private readonly CancellationTokenSource _cts;
-        public CancellationToken Token => _cts.Token;
 
         public RealCancellationToken(int expireTime)
         {

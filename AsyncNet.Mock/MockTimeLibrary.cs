@@ -10,9 +10,8 @@ namespace AsyncNet.Mock
 
         List<ITimeObserver> _timeObservers = new List<ITimeObserver>();
 
-        public MockTimeLibrary() 
-        { 
-            Time.SetTimeLibrary(this);
+        public MockTimeLibrary()
+        {
         }
 
         public void Advance(int ms)

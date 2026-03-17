@@ -40,7 +40,9 @@ namespace AsyncNet.Mock
             Task setTask;
             lock (_lock)
             {
-                if (_isSet) return;
+                if (_isSet)
+                    return;
+
                 var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
                 _setSignals.Add(tcs);
                 setTask = tcs.Task;
