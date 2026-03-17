@@ -1,7 +1,6 @@
 using AsyncNet.Mock;
 using AsyncNet.Scheduler;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 using System.Threading.Tasks;
 
 namespace AsyncNet.Test

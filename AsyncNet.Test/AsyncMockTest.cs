@@ -59,9 +59,9 @@ namespace AsyncNet.Test
 
             var task = AsyncScheduler.Post(async () =>
             {
+                var delayTask = Time.Delay(2000);
                 started.SetResult();
-
-                await Time.Delay(2000);
+                await delayTask;
                 await Task.WhenAny(_tcs.Task, ct.Task);
             });
 
@@ -81,7 +81,12 @@ namespace AsyncNet.Test
         {
             var ct2 = Time.GetCancellationToken(100);
             TaskCompletionSource started = new TaskCompletionSource();
-            var task = AsyncScheduler.Post(async () => { started.SetResult(); await ct2.Task; });
+
+            var task = AsyncScheduler.Post(async () =>
+            {
+                started.SetResult();
+                await ct2.Task;
+            });
 
             await started.Task;
 
@@ -96,7 +101,12 @@ namespace AsyncNet.Test
         {
             var ct3 = Time.GetCancellationToken(3000);
             TaskCompletionSource started = new TaskCompletionSource();
-            var task = AsyncScheduler.Post(async () => { started.SetResult(); await ct3.Task; });
+
+            var task = AsyncScheduler.Post(async () =>
+            {
+                started.SetResult();
+                await ct3.Task;
+            });
 
             await started.Task;
 

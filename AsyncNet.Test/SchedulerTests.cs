@@ -32,10 +32,12 @@ namespace AsyncNet.Test
         [TestMethod]
         public async Task Post_ShouldCompleteSuccessfully()
         {
-            var task = AsyncScheduler.Post(async () => await Task.CompletedTask);
+            var task = AsyncScheduler.Post(async () =>
+            {
+                await Task.CompletedTask;
+            });
 
             await task;
-
             Assert.IsTrue(task.IsCompletedSuccessfully);
         }
 
@@ -78,8 +80,13 @@ namespace AsyncNet.Test
 
             await Task.WhenAll(aStarted.Task, bStarted.Task);
 
-            aTcs.SetResult();
-            bTcs.SetResult();
+            // Post release through the STC so it runs only after both tasks have suspended,
+            // guaranteeing deterministic continuation order.
+            await AsyncScheduler.Post(async () =>
+            {
+                aTcs.SetResult();
+                bTcs.SetResult();
+            });
 
             await Task.WhenAll(taskA, taskB);
 
@@ -99,16 +106,18 @@ namespace AsyncNet.Test
             var taskA = AsyncScheduler.Post(async () =>
             {
                 events.Add("A1");
+                var delayA = Time.Delay(1000);
                 aStarted.SetResult();
-                await Time.Delay(1000);
+                await delayA;
                 events.Add("A2");
             });
 
             var taskB = AsyncScheduler.Post(async () =>
             {
                 events.Add("B1");
+                var delayB = Time.Delay(2000);
                 bStarted.SetResult();
-                await Time.Delay(2000);
+                await delayB;
                 events.Add("B2");
             });
 
@@ -130,15 +139,17 @@ namespace AsyncNet.Test
 
             var taskA = AsyncScheduler.Post(async () =>
             {
+                var delayA = Time.Delay(1000);
                 aStarted.SetResult();
-                await Time.Delay(1000);
+                await delayA;
                 events.Add("A");
             });
 
             var taskB = AsyncScheduler.Post(async () =>
             {
+                var delayB = Time.Delay(2000);
                 bStarted.SetResult();
-                await Time.Delay(2000);
+                await delayB;
                 events.Add("B");
             });
 
