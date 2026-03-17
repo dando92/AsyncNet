@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<IsTestProject>true</IsTestProject>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" />
+		<PackageReference Include="MSTest" />
+		<PackageReference Include="coverlet.collector" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\AsyncNet.Mock\AsyncNet.Mock.csproj" />
+	  <ProjectReference Include="..\AsyncNet.Real\AsyncNet.Real.csproj" />
+	  <ProjectReference Include="..\AsyncNet.Scheduler\AsyncNet.Scheduler.csproj" />
+	</ItemGroup>
+
+</Project>

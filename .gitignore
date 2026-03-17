@@ -7,6 +7,14 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/Dotnet.gitignore
 
+# ide files
+*.suo
+*.user
+*.sln.docstates
+.vs/
+*.nupkg
+*.snupkg
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
