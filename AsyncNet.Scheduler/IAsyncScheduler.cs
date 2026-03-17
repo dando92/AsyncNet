@@ -8,5 +8,4 @@ namespace AsyncNet.Scheduler
         Task Post(Func<Task> task);
         Task<T> Post<T>(Func<Task<T>> task);
     }
-
 }

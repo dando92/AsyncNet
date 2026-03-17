@@ -1,11 +1,13 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AsyncNet.Scheduler
 {
     public class ControlledContextAsyncScheduler : IAsyncScheduler
     {
-        private SingleThreadContext _context;
+        private readonly SingleThreadContext _context;
+        private readonly CancellationTokenSource _cts = new CancellationTokenSource();
 
         public ControlledContextAsyncScheduler()
         {
@@ -14,59 +16,47 @@ namespace AsyncNet.Scheduler
 
         public void Dispose()
         {
+            _cts.Cancel();
             _context.Dispose();
+            _cts.Dispose();
         }
 
-        public async Task Post(Func<Task> task)
+        public Task Post(Func<Task> task) => Post<object>(async () =>
         {
-            TaskCompletionSource<object> completion = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            _context.Post(async _ =>
-            {
-                try
-                {
-                    // Await the task directly within the posted action
-                    await task();
-                    completion.SetResult(null);
-                }
-                catch (OperationCanceledException)
-                {
-                    completion.TrySetCanceled();
-                }
-                catch (Exception ex)
-                {
-                    // This ensures the exception is passed directly to the caller of Post()
-                    completion.TrySetException(ex);
-                }
-            }, null);
-
-            await completion.Task;
-        }
+            await task();
+            return null;
+        });
 
         public async Task<T> Post<T>(Func<Task<T>> task)
         {
-            TaskCompletionSource<T> completion = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
+            TaskCompletionSource<T> tcs = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            CancellationTokenRegistration registration = _cts.Token.Register(() => tcs.TrySetCanceled());
 
             _context.Post(async _ =>
             {
                 try
                 {
-                    // Await the task directly within the posted action
-                    var res = await task();
-                    completion.SetResult(res);
+                    if (_cts.IsCancellationRequested) return;
+
+                    T result = await task();
+                    tcs.TrySetResult(result);
                 }
                 catch (OperationCanceledException)
                 {
-                    completion.TrySetCanceled();
+                    tcs.TrySetCanceled();
                 }
                 catch (Exception ex)
                 {
-                    // This ensures the exception is passed directly to the caller of Post()
-                    completion.TrySetException(ex);
+                    tcs.TrySetException(ex);
+                }
+                finally
+                {
+                    registration.Dispose();
                 }
             }, null);
 
-            return await completion.Task;
+            return await tcs.Task;
         }
     }
 }
