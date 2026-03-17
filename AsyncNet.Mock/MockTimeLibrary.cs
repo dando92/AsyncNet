@@ -88,7 +88,12 @@ namespace AsyncNet.Mock
 
         public IEventHandle GetEventHandle(int dueTime)
         {
-            return new MockedEventHandle();
+            var handle = new MockedEventHandle(this);
+            lock (_lock)
+            {
+                _timeObservers.Add(handle);
+            }
+            return handle;
         }
     }
 
