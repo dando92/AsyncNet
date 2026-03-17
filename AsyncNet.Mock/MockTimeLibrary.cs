@@ -16,12 +16,12 @@ namespace AsyncNet.Mock
 
         public void Advance(int ms)
         {
-            CurrentTime += ms;
-            
-            List<ITimeObserver> expiredObservers = new List<ITimeObserver>();
-
-            lock(_lock)
+            lock (_lock)
             {
+                CurrentTime += ms;
+
+                List<ITimeObserver> expiredObservers = new List<ITimeObserver>();
+
                 foreach (var observer in _timeObservers)
                 {
                     observer.OnTimeAdvanced(CurrentTime);
@@ -34,7 +34,7 @@ namespace AsyncNet.Mock
                     _timeObservers.Remove(expired);
             }
         }
-   
+
         public Task Delay(int ms)
         {
             return Delay(ms, null);
@@ -53,47 +53,42 @@ namespace AsyncNet.Mock
 
         public ICancellationToken GetCancellationToken(int ms)
         {
-            var ct = new MockedCancellationToken(CurrentTime + ms);
-            
             lock (_lock)
             {
+                var ct = new MockedCancellationToken(CurrentTime + ms);
                 _timeObservers.Add(ct);
+                return ct;
             }
-                
-            return ct;
-
         }
 
         public Task Delay(int ms, ICancellationToken token)
         {
-            var sleep = new MockedSleep(CurrentTime + ms, token);
-
             lock (_lock)
             {
+                var sleep = new MockedSleep(CurrentTime + ms, token);
                 _timeObservers.Add(sleep);
+                return sleep.Task;
             }
-
-            return sleep.Task;
         }
 
         public ITimer GetTimer(int dueTime)
         {
-            var timer = new MockTimer(this);
             lock (_lock)
             {
+                var timer = new MockTimer(this);
                 _timeObservers.Add(timer);
+                return timer;
             }
-            return timer;
         }
 
         public IEventHandle GetEventHandle(int dueTime)
         {
-            var handle = new MockedEventHandle(this);
             lock (_lock)
             {
+                var handle = new MockedEventHandle(this);
                 _timeObservers.Add(handle);
+                return handle;
             }
-            return handle;
         }
     }
 

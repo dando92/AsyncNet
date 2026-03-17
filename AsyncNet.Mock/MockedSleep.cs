@@ -41,7 +41,7 @@ namespace AsyncNet.Mock
 
         public void Dispose()
         {
-            _tcs.SetCanceled();
+            _tcs.TrySetCanceled();
             _stopTask.Dispose();
         }
     }

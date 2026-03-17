@@ -27,7 +27,11 @@ namespace AsyncNet.Test
         }
 
         [TestCleanup]
-        public void Cleanup() => _scheduler.Dispose();
+        public void Cleanup()
+        {
+            _timeLibrary.Dispose();
+            _scheduler.Dispose();
+        }
 
         [TestMethod]
         public async Task WorkflowB_ShouldComplete_WhenTcsIsSet()
