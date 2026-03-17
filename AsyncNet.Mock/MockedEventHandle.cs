@@ -1,30 +1,24 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AsyncNet.Mock
 {
-    public class MockedEventHandle : IEventHandle, ITimeObserver
+    public class MockedEventHandle : IEventHandle, IDisposable
     {
-        private readonly MockTimeLibrary _timeLibrary;
-        private readonly List<PendingWait> _waiters = new List<PendingWait>();
+        private readonly List<TaskCompletionSource<bool>> _setSignals = new List<TaskCompletionSource<bool>>();
         private readonly object _lock = new object();
         private bool _isSet;
-        private bool _isExpired = false;
-
-        public MockedEventHandle(MockTimeLibrary timeLibrary)
-        {
-            _timeLibrary = timeLibrary;
-        }
 
         public void Set()
         {
             lock (_lock)
             {
                 _isSet = true;
-                foreach (var waiter in _waiters)
-                    waiter.Tcs.TrySetResult(true);
-                _waiters.Clear();
+                foreach (var tcs in _setSignals)
+                    tcs.TrySetResult(true);
+                _setSignals.Clear();
             }
         }
 
@@ -41,57 +35,31 @@ namespace AsyncNet.Mock
             WaitAsync(time).Wait();
         }
 
-        public Task WaitAsync(int time)
+        public async Task WaitAsync(int time)
         {
+            Task setTask;
             lock (_lock)
             {
-                if (_isSet) return Task.CompletedTask;
-
-                var waiter = new PendingWait(_timeLibrary.CurrentTime + time);
-                _waiters.Add(waiter);
-                return waiter.Tcs.Task;
+                if (_isSet) return;
+                var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                _setSignals.Add(tcs);
+                setTask = tcs.Task;
             }
-        }
 
-        public void OnTimeAdvanced(int newTime)
-        {
-            lock (_lock)
-            {
-                _waiters.RemoveAll(w =>
-                {
-                    if (newTime >= w.ExpiryTime)
-                    {
-                        w.Tcs.TrySetException(new TimeoutException("EventHandle wait timed out"));
-                        return true;
-                    }
-                    return false;
-                });
-            }
-        }
+            var delayTask = Time.Delay(time);
+            var winner = await Task.WhenAny(setTask, delayTask);
 
-        public bool IsExpired() => _isExpired;
+            if (winner != setTask)
+                throw new TimeoutException("EventHandle wait timed out");
+        }
 
         public void Dispose()
         {
             lock (_lock)
             {
-                foreach (var waiter in _waiters)
-                    waiter.Tcs.TrySetCanceled();
-                
-                _waiters.Clear();
-                
-                _isExpired = true;
-            }
-        }
-
-        private class PendingWait
-        {
-            public TaskCompletionSource<bool> Tcs { get; } = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            public int ExpiryTime { get; }
-
-            public PendingWait(int expiryTime)
-            {
-                ExpiryTime = expiryTime;
+                foreach (var tcs in _setSignals)
+                    tcs.TrySetCanceled();
+                _setSignals.Clear();
             }
         }
     }
