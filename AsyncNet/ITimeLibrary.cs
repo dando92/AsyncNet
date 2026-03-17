@@ -13,6 +13,6 @@ namespace AsyncNet
 
         ITimer GetTimer(int dueTime);
 
-        ITimer GetEventHandle(int dueTime);
+        IEventHandle GetEventHandle(int dueTime);
     }
 }

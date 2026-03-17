@@ -25,5 +25,15 @@ namespace AsyncNet
         {
             return _timeLibrary.GetCancellationToken(expireTime);
         }
+
+        public static ITimer GetTimer(int dueTime)
+        {
+            return _timeLibrary.GetTimer(dueTime);
+        }
+
+        public static IEventHandle GetEventHandle(int dueTime)
+        {
+            return _timeLibrary.GetEventHandle(dueTime);
+        }
     }
 }

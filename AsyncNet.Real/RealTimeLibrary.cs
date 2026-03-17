@@ -24,14 +24,14 @@ namespace AsyncNet.Real
             return new RealCancellationToken(expireTime);
         }
 
-        public ITimer GetEventHandle(int dueTime)
+        public IEventHandle GetEventHandle(int dueTime)
         {
-            throw new System.NotImplementedException();
+            return new RealEventHandle();
         }
 
         public ITimer GetTimer(int dueTime)
         {
-            throw new System.NotImplementedException();
+            return new TaskDelayTimer();
         }
     }
 

@@ -79,12 +79,22 @@ namespace AsyncNet.Mock
 
         public ITimer GetTimer(int dueTime)
         {
-            throw new System.NotImplementedException();
+            var timer = new MockTimer(this);
+            lock (_lock)
+            {
+                _timeObservers.Add(timer);
+            }
+            return timer;
         }
 
-        public ITimer GetEventHandle(int dueTime)
+        public IEventHandle GetEventHandle(int dueTime)
         {
-            throw new System.NotImplementedException();
+            var handle = new MockedEventHandle(this);
+            lock (_lock)
+            {
+                _timeObservers.Add(handle);
+            }
+            return handle;
         }
     }
 
