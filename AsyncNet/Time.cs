@@ -11,6 +11,8 @@ namespace AsyncNet
             _timeLibrary = library;
         }
 
+        public static int CurrentTime => _timeLibrary.CurrentTime;
+
         public static async Task Delay(int milliseconds)
         {
             await _timeLibrary.Delay(milliseconds);

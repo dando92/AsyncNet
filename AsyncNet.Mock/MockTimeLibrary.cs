@@ -55,7 +55,8 @@ namespace AsyncNet.Mock
         {
             lock (_lock)
             {
-                var ct = new MockedCancellationToken(CurrentTime + ms);
+                var expireTime = ms <= 0 ? -1 : CurrentTime + ms;
+                var ct = new MockedCancellationToken(expireTime);
                 _timeObservers.Add(ct);
                 return ct;
             }

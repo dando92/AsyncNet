@@ -5,6 +5,8 @@ namespace AsyncNet
 {
     public interface ITimeLibrary
     {
+        int CurrentTime { get; }
+
         Task Delay(int ms);
 
         Task Delay(int ms, ICancellationToken token);

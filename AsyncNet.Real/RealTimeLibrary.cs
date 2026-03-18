@@ -1,9 +1,12 @@
+using System;
 using System.Threading.Tasks;
 
 namespace AsyncNet.Real
 {
     public class RealTimeLibrary : ITimeLibrary
     {
+        public int CurrentTime => Environment.TickCount;
+
         public Task Delay(int ms)
         {
             return Task.Delay(ms);
