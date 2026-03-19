@@ -1,7 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <PackageId>AsyncNet</PackageId>
+    <Description>Core abstractions for deterministic async testing and scheduling: ITimeLibrary, ICancellationToken, ITimer, and IEventHandle.</Description>
+    <PackageTags>async;testing;time;deterministic;mocking</PackageTags>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
 </Project>

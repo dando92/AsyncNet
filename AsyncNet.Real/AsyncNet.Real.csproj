@@ -1,11 +1,18 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <PackageId>AsyncNet.Real</PackageId>
+    <Description>Production implementations of AsyncNet abstractions using .NET BCL primitives: RealTimeLibrary (Task.Delay), RealCancellationToken, TaskDelayTimer, and RealEventHandle.</Description>
+    <PackageTags>async;time;scheduling;production</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\AsyncNet\AsyncNet.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>

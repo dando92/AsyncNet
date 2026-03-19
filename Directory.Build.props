@@ -1,0 +1,14 @@
+<Project>
+  <PropertyGroup>
+    <Authors>Alessandro Dore</Authors>
+    <Copyright>Copyright © 2025 Alessandro Dore</Copyright>
+    <RepositoryUrl>https://github.com/YOUR_USERNAME/AsyncNet</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/YOUR_USERNAME/AsyncNet</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <VersionPrefix>1.0.0</VersionPrefix>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+</Project>
